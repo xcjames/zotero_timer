@@ -1,42 +1,42 @@
-var MakeItRed;
+// bootstrap.js
+var ZoteroClockTimer;
 
 function log(msg) {
-	Zotero.debug("Make It Red: " + msg);
+	Zotero.debug("Zotero Clock Timer: " + msg);
 }
 
 function install() {
-	log("Installed 2.0");
+	log("Installed 1.0");
 }
 
 async function startup({ id, version, rootURI }) {
-	log("Starting 2.0");
-	
+	log("Starting 1.0");
+
 	Zotero.PreferencePanes.register({
-		pluginID: 'make-it-red@example.com',
+		pluginID: 'zotero-clock-timer@example.com',
 		src: rootURI + 'preferences.xhtml',
 		scripts: [rootURI + 'preferences.js']
 	});
-	
-	Services.scriptloader.loadSubScript(rootURI + 'make-it-red.js');
-	MakeItRed.init({ id, version, rootURI });
-	MakeItRed.addToAllWindows();
-	await MakeItRed.main();
+
+	Services.scriptloader.loadSubScript(rootURI + 'zotero-clock-timer.js');
+	ZoteroClockTimer.init({ id, version, rootURI });
+	ZoteroClockTimer.addToAllWindows();
 }
 
 function onMainWindowLoad({ window }) {
-	MakeItRed.addToWindow(window);
+	ZoteroClockTimer.addToWindow(window);
 }
 
 function onMainWindowUnload({ window }) {
-	MakeItRed.removeFromWindow(window);
+	ZoteroClockTimer.removeFromWindow(window);
 }
 
 function shutdown() {
-	log("Shutting down 2.0");
-	MakeItRed.removeFromAllWindows();
-	MakeItRed = undefined;
+	log("Shutting down 1.0");
+	ZoteroClockTimer.removeFromAllWindows();
+	ZoteroClockTimer = undefined;
 }
 
 function uninstall() {
-	log("Uninstalled 2.0");
+	log("Uninstalled 1.0");
 }
