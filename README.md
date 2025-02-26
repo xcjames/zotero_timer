@@ -34,5 +34,11 @@ Simply **install & activate** the `.xpi` file plugin in Zotero, and start tracki
 1. run `git clone https://github.com/xcjames/zotero_timer`, clone to your local machine (or use Github codespace). Add the function that you want to develop in the js files.
 2. run `./make-zips`, then you will see a "./build" directory, there is your `zotero-timer.xpi` file that can be installed
 
-Here is a Clock & Timer that can track your time for reading papers! \nCherish your time and happy research!
-![Here is a Clock & Timer that can track your time for reading papers! \nCherish your time and happy research!](image.png)
+Here is a Clock & Timer that can track your time for reading papers! 
+
+
+Cherish your time and happy research!
+
+
+
+![Here is a Clock & Timer that can track your time for reading papers! Cherish your time and happy research!](image.png)
