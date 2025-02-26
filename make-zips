@@ -3,9 +3,8 @@ set -euo pipefail
 
 rm -rf build
 mkdir build
-
 cd ./src-2.0
 zip -r ../build/zotero-timer.xpi *
 cd ../build
-
 jq ".addons[\"make-it-red@example.com\"].updates[0].update_hash = \"sha256:`shasum -a 256 zotero-timer.xpi | cut -d' ' -f1`\"" ../updates-2.0.json.tmpl > updates-2.0.json
+cd ../

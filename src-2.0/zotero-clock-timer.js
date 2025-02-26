@@ -24,114 +24,270 @@ ZoteroClockTimer = {
 
     addToWindow(window) {
         let doc = window.document;
-
+    
         // Create container
-        let container = doc.createElement('vbox');
+        let container = doc.createElement('div');
         container.id = 'zotero-clock-timer-container';
         container.style.position = 'absolute';
-        container.style.top = '5px';
-        container.style.right = '5px';
-        container.style.padding = '5px';
-        container.style.background = 'rgba(0,0,0,0.7)';
-        container.style.color = 'white';
-        container.style.fontSize = '8px';
-        container.style.borderRadius = '2px';
-
+        container.style.bottom = '20px';
+        container.style.left = '20px';
+        container.style.padding = '12px';
+        container.style.background = 'rgba(255, 255, 255, 0.15)';
+        container.style.backdropFilter = 'blur(12px)';
+        container.style.color = '#333';
+        container.style.fontSize = '12px';
+        container.style.borderRadius = '12px';
+        container.style.boxShadow = '0px 4px 12px rgba(0, 0, 0, 0.2)';
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.alignItems = 'center';
+        container.style.cursor = 'grab';
+        container.style.width = '220px';
+        container.style.textAlign = 'center';
+        container.style.userSelect = 'none';
+    
+        // Dragging functionality
+        let isDragging = false, offsetX, offsetY;
+    
+        container.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.clientX - container.getBoundingClientRect().left;
+            offsetY = e.clientY - container.getBoundingClientRect().top;
+            container.style.cursor = 'grabbing';
+        });
+    
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                container.style.left = `${e.clientX - offsetX}px`;
+                container.style.top = `${e.clientY - offsetY}px`;
+            }
+        });
+    
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            container.style.cursor = 'grab';
+        });
+    
         // Clock Element
-        let clockElem = doc.createElement('label');
+        let clockElem = doc.createElement('div');
         clockElem.id = 'zotero-clock';
         clockElem.textContent = 'Clock: --:--:--';
+        clockElem.style.fontSize = '14px';
+        clockElem.style.marginBottom = '6px';
+        clockElem.style.color = '#222'; 
+
         container.appendChild(clockElem);
-
+    
         // Timer Element
-        let timerElem = doc.createElement('label');
+        let timerElem = doc.createElement('div');
         timerElem.id = 'zotero-timer';
-        timerElem.style.marginRight = '2px';
         timerElem.textContent = 'Timer: 00:00:00';
-        container.appendChild(timerElem);
+        timerElem.style.marginBottom = '6px';
+        timerElem.style.color = '#222'; 
 
+        container.appendChild(timerElem);
+    
         // Countdown Timer Element
-        let countdownElem = doc.createElement('label');
+        let countdownElem = doc.createElement('div');
         countdownElem.id = 'zotero-countdown';
         countdownElem.textContent = 'Countdown: 00:00:00';
+        countdownElem.style.marginBottom = '6px';
+        countdownElem.style.color = '#222'; 
         container.appendChild(countdownElem);
-
+    
         // Countdown Time Input Fields
         let countdownInputs = doc.createElement('div');
-        countdownInputs.style.marginTop = '2px';
+        countdownInputs.style.display = 'flex';
+        countdownInputs.style.justifyContent = 'center';
+        countdownInputs.style.marginBottom = '6px';
+    
+        const createInput = (id, placeholder) => {
+            let input = doc.createElement('input');
+            input.id = id;
+            input.type = 'number';
+            input.min = 0;
+            input.max = 59;
+            input.placeholder = placeholder;
+            input.style.width = '40px';
+            input.style.padding = '5px';
+            input.style.border = 'none';
+            input.style.borderRadius = '6px';
+            input.style.textAlign = 'center';
+            input.style.margin = '0 3px';
+            input.style.fontSize = '12px';
+            input.style.background = 'rgba(255, 255, 255, 0.3)';
+            input.style.color = '#222'; // Input text
 
-        // Hour Input
-        let hourInput = doc.createElement('input');
-        hourInput.id = 'zotero-countdown-hour';
-        hourInput.type = 'number';
-        hourInput.min = 0;
-        hourInput.max = 23;
-        hourInput.placeholder = 'HH';
-        hourInput.style.width = '40px';
-        hourInput.style.marginRight = '5px';
+            input.style.outline = 'none';
+            return input;
+        };
+    
+        let hourInput = createInput('zotero-countdown-hour', 'HH');
+        let minuteInput = createInput('zotero-countdown-minute', 'MM');
+        let secondInput = createInput('zotero-countdown-second', 'SS');
+    
         countdownInputs.appendChild(hourInput);
-
-        // Minute Input
-        let minuteInput = doc.createElement('input');
-        minuteInput.id = 'zotero-countdown-minute';
-        minuteInput.type = 'number';
-        minuteInput.min = 0;
-        minuteInput.max = 59;
-        minuteInput.placeholder = 'MM';
-        minuteInput.style.width = '40px';
-        minuteInput.style.marginRight = '5px';
         countdownInputs.appendChild(minuteInput);
-
-        // Second Input
-        let secondInput = doc.createElement('input');
-        secondInput.id = 'zotero-countdown-second';
-        secondInput.type = 'number';
-        secondInput.min = 0;
-        secondInput.max = 59;
-        secondInput.placeholder = 'SS';
-        secondInput.style.width = '40px';
         countdownInputs.appendChild(secondInput);
-
         container.appendChild(countdownInputs);
-
-        // Start/Stop Countdown Button
-        let startStopButton = doc.createElement('button');
-        startStopButton.id = 'zotero-countdown-start-stop';
-        startStopButton.textContent = 'Start';
-        startStopButton.style.marginLeft = '5px';
-        startStopButton.style.cursor = 'pointer';
-        startStopButton.style.fontSize = '8px';
-        startStopButton.addEventListener('click', () => this.toggleCountdown(window, startStopButton));
-        container.appendChild(startStopButton);
-
-        // Reset Countdown Button
-        let resetCountdownButton = doc.createElement('button');
-        resetCountdownButton.id = 'zotero-countdown-reset';
-        resetCountdownButton.textContent = 'Reset Countdown';
-        resetCountdownButton.style.marginLeft = '5px';
-        resetCountdownButton.style.cursor = 'pointer';
-        resetCountdownButton.style.fontSize = '8px';
-        resetCountdownButton.addEventListener('click', () => this.resetCountdown(window));
-        container.appendChild(resetCountdownButton);
-
-        // Reset Timer Button
-        let resetButton = doc.createElement('button');
-        resetButton.id = 'zotero-timer-reset';
-        resetButton.textContent = 'Reset Timer';
-        resetButton.style.marginLeft = '5px';
-        resetButton.style.cursor = 'pointer';
-        resetButton.style.fontSize = '8px';
-        resetButton.addEventListener('click', () => this.resetTimer(window));
-        container.appendChild(resetButton);
-
+    
+        // Buttons
+        let buttonsContainer = doc.createElement('div');
+        buttonsContainer.style.display = 'flex';
+        buttonsContainer.style.justifyContent = 'center';
+    
+        const createButton = (id, text, callback) => {
+            let button = doc.createElement('button');
+            button.id = id;
+            button.textContent = text;
+            button.style.background = 'rgba(255, 255, 255, 0.3)';
+            button.style.color = '#222'; // Button text
+            button.style.border = 'none';
+            button.style.borderRadius = '8px';
+            button.style.padding = '6px 10px';
+            button.style.margin = '4px';
+            button.style.fontSize = '12px';
+            button.style.cursor = 'pointer';
+            button.style.transition = 'all 0.2s';
+            button.addEventListener('mouseenter', () => {
+                button.style.background = 'rgba(255, 255, 255, 0.5)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.background = 'rgba(255, 255, 255, 0.3)';
+            });
+            button.addEventListener('click', () => callback(window, button));
+            return button;
+        };
+    
+        let startStopButton = createButton('zotero-countdown-start-stop', 'Start', this.toggleCountdown);
+        let resetCountdownButton = createButton('zotero-countdown-reset', 'Reset Countdown', this.resetCountdown);
+        let resetTimerButton = createButton('zotero-timer-reset', 'Reset Timer', this.resetTimer);
+    
+        buttonsContainer.appendChild(startStopButton);
+        buttonsContainer.appendChild(resetCountdownButton);
+        buttonsContainer.appendChild(resetTimerButton);
+        container.appendChild(buttonsContainer);
+    
         doc.documentElement.appendChild(container);
         this.storeAddedElement(container);
-
+    
         this.startClock(window);
         this.startTimer(window);
         this.addKeyboardShortcut(window);
     },
+    
+    // addToWindow(window) {
+    //     let doc = window.document;
 
+    //     // Create container
+    //     let container = doc.createElement('vbox');
+    //     container.id = 'zotero-clock-timer-container';
+    //     container.style.position = 'absolute';
+    //     container.style.bottom = '5px';
+    //     container.style.left = '5px';
+    //     container.style.padding = '5px';
+    //     container.style.background = 'rgba(255, 255, 255, 0.2)'; // Glassmorphism effect
+    //     container.style.backdropFilter = 'blur(10px)';
+    //     container.style.color = 'white';
+    //     container.style.fontSize = '8px';
+    //     container.style.borderRadius = '2px';
+
+    //     // Clock Element
+    //     let clockElem = doc.createElement('label');
+    //     clockElem.id = 'zotero-clock';
+    //     clockElem.textContent = 'Clock: --:--:--';
+    //     container.appendChild(clockElem);
+
+    //     // Timer Element
+    //     let timerElem = doc.createElement('label');
+    //     timerElem.id = 'zotero-timer';
+    //     timerElem.style.marginRight = '2px';
+    //     timerElem.textContent = 'Timer: 00:00:00';
+    //     container.appendChild(timerElem);
+
+    //     // Countdown Timer Element
+    //     let countdownElem = doc.createElement('label');
+    //     countdownElem.id = 'zotero-countdown';
+    //     countdownElem.textContent = 'Countdown: 00:00:00';
+    //     container.appendChild(countdownElem);
+
+    //     // Countdown Time Input Fields
+    //     let countdownInputs = doc.createElement('div');
+    //     countdownInputs.style.marginTop = '2px';
+
+    //     // Hour Input
+    //     let hourInput = doc.createElement('input');
+    //     hourInput.id = 'zotero-countdown-hour';
+    //     hourInput.type = 'number';
+    //     hourInput.min = 0;
+    //     hourInput.max = 23;
+    //     hourInput.placeholder = 'HH';
+    //     hourInput.style.width = '20px';
+    //     hourInput.style.marginRight = '5px';
+    //     countdownInputs.appendChild(hourInput);
+
+    //     // Minute Input
+    //     let minuteInput = doc.createElement('input');
+    //     minuteInput.id = 'zotero-countdown-minute';
+    //     minuteInput.type = 'number';
+    //     minuteInput.min = 0;
+    //     minuteInput.max = 59;
+    //     minuteInput.placeholder = 'MM';
+    //     minuteInput.style.width = '20px';
+    //     minuteInput.style.marginRight = '5px';
+    //     countdownInputs.appendChild(minuteInput);
+
+    //     // Second Input
+    //     let secondInput = doc.createElement('input');
+    //     secondInput.id = 'zotero-countdown-second';
+    //     secondInput.type = 'number';
+    //     secondInput.min = 0;
+    //     secondInput.max = 59;
+    //     secondInput.placeholder = 'SS';
+    //     secondInput.style.width = '20px';
+    //     countdownInputs.appendChild(secondInput);
+
+    //     container.appendChild(countdownInputs);
+
+    //     // Start/Stop Countdown Button
+    //     let startStopButton = doc.createElement('button');
+    //     startStopButton.id = 'zotero-countdown-start-stop';
+    //     startStopButton.textContent = 'Start';
+    //     startStopButton.style.marginLeft = '5px';
+    //     startStopButton.style.cursor = 'pointer';
+    //     startStopButton.style.fontSize = '8px';
+    //     startStopButton.addEventListener('click', () => this.toggleCountdown(window, startStopButton));
+    //     container.appendChild(startStopButton);
+
+    //     // Reset Countdown Button
+    //     let resetCountdownButton = doc.createElement('button');
+    //     resetCountdownButton.id = 'zotero-countdown-reset';
+    //     resetCountdownButton.textContent = 'Reset Countdown';
+    //     resetCountdownButton.style.marginLeft = '5px';
+    //     resetCountdownButton.style.cursor = 'pointer';
+    //     resetCountdownButton.style.fontSize = '8px';
+    //     resetCountdownButton.addEventListener('click', () => this.resetCountdown(window));
+    //     container.appendChild(resetCountdownButton);
+
+    //     // Reset Timer Button
+    //     let resetButton = doc.createElement('button');
+    //     resetButton.id = 'zotero-timer-reset';
+    //     resetButton.textContent = 'Reset Timer';
+    //     resetButton.style.marginLeft = '5px';
+    //     resetButton.style.cursor = 'pointer';
+    //     resetButton.style.fontSize = '8px';
+    //     resetButton.addEventListener('click', () => this.resetTimer(window));
+    //     container.appendChild(resetButton);
+
+    //     doc.documentElement.appendChild(container);
+    //     this.storeAddedElement(container);
+
+    //     this.startClock(window);
+    //     this.startTimer(window);
+    //     this.addKeyboardShortcut(window);
+    // },
+    
+    
     addToAllWindows() {
         let windows = Zotero.getMainWindows();
         for (let win of windows) {
